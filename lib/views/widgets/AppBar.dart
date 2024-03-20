@@ -1,6 +1,6 @@
 // app_bar.dart
-import 'package:flutter/material.dart';
 import 'package:cs2_news/models/Category.dart';
+import 'package:flutter/material.dart';
 import '../pages/option_news.dart';
 import '../pages/searchScreen.dart';
 import 'CategoryWidget.dart';

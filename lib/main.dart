@@ -1,4 +1,7 @@
+import 'package:cs2_news/views/pages/match.dart';
+import 'package:cs2_news/views/pages/thread.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'models/BottomNavItem.dart';
 import 'views/pages/home.dart';
@@ -38,7 +41,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  final List<Widget> _pages = [HomePage(), const UserPage()];
+  final List<Widget> _pages = [
+    HomePage(),
+    const MatchPage(),
+    const ThreadPage()
+  ];
 
   final List<BottomNavItem> bottomNavItems = [
     BottomNavItem(
@@ -46,7 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
           Icons.refresh,
         ),
         label: 'Refresh'),
-    BottomNavItem(icon: const Icon(Icons.person_outline), label: 'User'),
+    BottomNavItem.fa(
+        faIcon: const FaIcon(FontAwesomeIcons.three), label: 'Thread'),
+    BottomNavItem(icon: const Icon(Icons.join_full), label: 'Match'),
   ];
 
   @override
@@ -75,7 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
               else
                 BottomNavigationBarItem(
-                  icon: bottomNavItems.elementAt(i).icon,
+                  icon: bottomNavItems.elementAt(i).icon ??
+                      const Icon(Icons.error),
                   label: bottomNavItems.elementAt(i).label,
                 )
           ],
