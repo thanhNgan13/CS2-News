@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cs2_news/providers/post_provider.dart';
 import '../widgets/MyPost.dart';
+import '../widgets/loading.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,14 +23,19 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 provider.isLoading
-                    ? const CircularProgressIndicator()
+                    ? const loading()
                     : Expanded(
                         child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: provider.posts.map((item) {
-                              return MyPost(post: item);
-                            }).toList(),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: provider.posts.length,
+                            itemBuilder: (context, index) {
+                              var item = provider.posts[index];
+                              return MyPost(
+                                post: item,
+                              );
+                            },
                           ),
                         ),
                       ),

@@ -1,8 +1,9 @@
+import 'package:cs2_news/models/match_model.dart';
 class MatchSection {
   String time;
-  List<Match> matchs;
+  List<Match> matches;
   MatchSection({
     required this.time,
-    required this.matchs,
+    required this.matches,
   });
 }

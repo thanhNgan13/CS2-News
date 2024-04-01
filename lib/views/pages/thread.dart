@@ -1,4 +1,5 @@
 import 'package:cs2_news/providers/thread_provider.dart';
+import 'package:cs2_news/views/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,13 +20,22 @@ class _ThreadPageState extends State<ThreadPage> {
         return Scaffold(
           backgroundColor: Colors.black,
           body: provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ListView(
-                  children: provider.threads
-                      .map((item) => ThreadItem(
-                            thread: item,
-                          ))
-                      .toList(),
+              ? const loading()
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemCount: provider.threads.length,
+                      itemBuilder: (context, index) {
+                        var item = provider.threads[index];
+                        return ThreadItem(
+                          thread: item,
+                        );
+                      },
+                    ),
+                  ),
                 ),
         );
       },
