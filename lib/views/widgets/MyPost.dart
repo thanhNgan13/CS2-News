@@ -1,6 +1,11 @@
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
+import 'package:cs2_news/providers/post_provider.dart';
+import 'package:cs2_news/views/widgets/InterstitialAd.dart';
+import 'package:cs2_news/views/widgets/load_image_network.dart';
 import 'package:flutter/material.dart';
 import 'package:cs2_news/models/post_model.dart';
 import 'package:cs2_news/views/widgets/BodyPost.dart';
+import 'package:provider/provider.dart';
 
 class MyPost extends StatelessWidget {
   const MyPost({
@@ -12,143 +17,99 @@ class MyPost extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15.0),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BodyPost(
-                      post: post,
-                    )),
-          );
-        },
-        child: Column(
-          children: [
-            Image.network(
-              post.imageUrl,
-              height: 250,
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Placeholder(
-                  fallbackHeight: 250,
-                  fallbackWidth: MediaQuery.of(context).size.width,
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
+    return Consumer2<PostProvider, InterstitialAdProvider>(
+        builder: (context, postPrvider, interstitialAdProvider, child) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 15.0),
+        child: InkWell(
+          onTap: () {
+            if (post.contents.isEmpty) {
+              postPrvider.fetchDataPost(post.index, post.link);
+            }
+
+            interstitialAdProvider.checkMoveTab();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BodyPost(
+                        post: post,
+                      )),
+            );
+          },
+          child: Column(
+            children: [
+              Image.network(
+                post.imageUrl,
+                height: 250,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Image(
+                    image: AssetImage('assets/images/error.jpg'),
+                    height: 250,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      ClipOval(
-                        child: Image.network(
-                          'https://inkythuatso.com/uploads/thumbnails/800/2021/11/logo-mu-inkythuatso-3-01-05-15-53-03.jpg',
-                          width: 20,
-                          height: 20,
-                          fit: BoxFit.cover,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const ClipOval(
+                          child: loadImageNetwork(
+                              url:
+                                  'https://www.hltv.org/img/static/TopSmallLogo2x.png',
+                              width: 20,
+                              height: 20),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(
-                        'VNExpress',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
+                        const SizedBox(
+                          width: 10,
                         ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(
-                        '22h',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                        const Text(
+                          'HLTV',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          post.pubDate,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '155',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.thumb_up_alt_outlined,
-                            color: Colors.grey,
-                            size: 15,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Icon(
-                            Icons.fiber_manual_record,
-                            color: Colors.grey,
-                            size: 5,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            '112',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.comment_outlined,
-                            color: Colors.grey,
-                            size: 15,
-                          ),
-                        ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      post.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Icon(
-                        Icons.more_vert,
-                        color: Colors.grey,
-                        size: 25,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
