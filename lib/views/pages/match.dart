@@ -1,4 +1,6 @@
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
 import 'package:cs2_news/providers/match_provider.dart';
+import 'package:cs2_news/views/widgets/InterstitialAd.dart';
 import 'package:cs2_news/views/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +16,13 @@ class MatchPage extends StatefulWidget {
 class _MatchPageState extends State<MatchPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<MatchProvider>(
-      builder: (context, provider, child) {
-        return Scaffold(
+    return Consumer2<MatchProvider, InterstitialAdProvider>(
+      builder: (context, postProvider, interstitialAdProvider, child) {
+        return interstitialAdProvider.isLoading
+            ? MyInterstitialAdWidget()
+            : Scaffold(
           backgroundColor: Colors.black,
-          body: provider.isLoading
+          body: postProvider.isLoading
               ? const loading()
               : SingleChildScrollView(
                   child: Padding(
@@ -26,9 +30,9 @@ class _MatchPageState extends State<MatchPage> {
                     child: ListView.builder(
                       shrinkWrap: true,
                       physics: const ClampingScrollPhysics(),
-                      itemCount: provider.matchSections.length,
+                      itemCount: postProvider.matchSections.length,
                       itemBuilder: (context, index) {
-                        var item = provider.matchSections[index];
+                        var item = postProvider.matchSections[index];
                         return MatchSectionWidget(
                           time: item.time,
                           matches: item.matches,

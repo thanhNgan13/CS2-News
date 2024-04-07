@@ -1,19 +1,31 @@
 import 'dart:async';
 
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
 import 'package:cs2_news/providers/match_provider.dart';
 import 'package:cs2_news/providers/post_provider.dart';
 import 'package:cs2_news/providers/thread_provider.dart';
 import 'package:cs2_news/views/pages/match.dart';
-import 'package:cs2_news/views/pages/rating.dart';
 import 'package:cs2_news/views/pages/thread.dart';
+import 'package:cs2_news/views/widgets/BannerAd.dart';
+import 'package:cs2_news/views/widgets/rate_app_init_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 import 'models/BottomNavItem.dart';
 import 'views/pages/home.dart';
 
-void main() {
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  unawaited(MobileAds.instance.initialize());
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => PostProvider(),
@@ -24,6 +36,9 @@ void main() {
     ChangeNotifierProvider(
       create: (context) => MatchProvider(),
     ),
+    ChangeNotifierProvider(
+      create: (context) => InterstitialAdProvider(),
+    ),
   ], child: const MyApp()));
 }
 
@@ -33,48 +48,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'CS2 News',
-      home: SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Sau 2 giây, chuyển đến màn hình chính của ứng dụng
-    Timer(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MyHomePage()),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Hiển thị logo hoặc hình ảnh trong màn hình khởi đầu
-    return Scaffold(
-      body: Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            'assets/images/app_icon_CS2.png',
-            fit: BoxFit.cover,
-            height: 200.0,
-            width: 200.0,
-          ),
-        ),
+      home: RateAppInitWidget(
+        builder: (rateMyApp) => MyHomePage(),
       ),
     );
   }
@@ -100,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _postProvider = context.read<PostProvider>();
     _threadProvider = context.read<ThreadProvider>();
     _matchProvider = context.read<MatchProvider>();
+    FlutterNativeSplash.remove();
   }
 
   // Hàm thực hiện fetch data
@@ -125,18 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
         _refreshDataPost();
       } else if (index == 1) {
         _refreshDataThread();
-      } else {
+      } else if (index == 2) {
         _refreshDataMatch();
       }
     });
   }
-
-  final List<Widget> _pages = [
-    const HomePage(),
-    const ThreadPage(),
-    const MatchPage(),
-    const RatingPage(),
-  ];
 
   final List<BottomNavItem> bottomNavItems = [
     BottomNavItem(
@@ -147,7 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
     BottomNavItem.fa(
         faIcon: const FaIcon(FontAwesomeIcons.three), label: 'Threads'),
     BottomNavItem(icon: const Icon(Icons.join_full), label: 'Matches'),
-    BottomNavItem(icon: const Icon(Icons.star_rate_rounded), label: 'Rating'),
   ];
 
   @override
@@ -175,9 +146,23 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
+      body: Container(
+        color: Colors.black,
+        child: Column(
+          children: [
+            MyBannerAdWidget(),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: const [
+                  HomePage(),
+                  ThreadPage(),
+                  MatchPage(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,

@@ -1,4 +1,6 @@
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
 import 'package:cs2_news/providers/post_provider.dart';
+import 'package:cs2_news/views/widgets/InterstitialAd.dart';
 import 'package:cs2_news/views/widgets/load_image_network.dart';
 import 'package:flutter/material.dart';
 import 'package:cs2_news/models/post_model.dart';
@@ -15,14 +17,18 @@ class MyPost extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<PostProvider>(builder: (context, provider, child) {
+    return Consumer2<PostProvider, InterstitialAdProvider>(
+        builder: (context, postPrvider, interstitialAdProvider, child) {
       return Container(
         margin: const EdgeInsets.only(bottom: 15.0),
         child: InkWell(
           onTap: () {
             if (post.contents.isEmpty) {
-              provider.fetchDataPost(post.index, post.link);
+              postPrvider.fetchDataPost(post.index, post.link);
             }
+
+            interstitialAdProvider.checkMoveTab();
+
             Navigator.push(
               context,
               MaterialPageRoute(

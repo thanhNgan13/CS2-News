@@ -1,6 +1,8 @@
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cs2_news/models/thread_model.dart';
 import 'package:cs2_news/views/widgets/BodyThread.dart';
+import 'package:provider/provider.dart';
 
 class ThreadItem extends StatelessWidget {
   const ThreadItem({
@@ -24,6 +26,8 @@ class ThreadItem extends StatelessWidget {
                 ),
               ),
             );
+            Provider.of<InterstitialAdProvider>(context, listen: false)
+                .checkMoveTab();
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),

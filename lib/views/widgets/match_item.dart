@@ -1,6 +1,8 @@
+import 'package:cs2_news/providers/interstitialAd_provider.dart';
 import 'package:cs2_news/views/widgets/BodyThread.dart';
 import 'package:flutter/material.dart';
 import 'package:cs2_news/models/match_model.dart';
+import 'package:provider/provider.dart';
 
 import 'load_image_network.dart';
 
@@ -40,6 +42,9 @@ class MatchItem extends StatelessWidget {
                     link: match.link,
                   )),
         );
+
+        Provider.of<InterstitialAdProvider>(context, listen: false)
+                .checkMoveTab();
       },
       child: Container(
         width: double.infinity,
